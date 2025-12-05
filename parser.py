@@ -1,3 +1,14 @@
+#-----------------------------------------------------------#
+# If running for the first time, set up venv using terminal #
+#-----------------------------------------------------------#
+
+# brew install python@3.10
+# python3.10 -m venv venv310
+# source venv310/bin/activate
+# pip install owlready2
+
+##### ACTIVATE VENV BEFORE RUNNING #####
+
 # source venv310/bin/activate
 
 from owlready2 import *
