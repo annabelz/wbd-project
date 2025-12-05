@@ -7,6 +7,87 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://www.wbd.org/neuro"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.wbd.org/neuro#associated_with -->
+
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#associated_with">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#Gene"/>
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#Pollutant"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#Disease"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.wbd.org/neuro#evidenced_by -->
+
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#evidenced_by"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#induces -->
+
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#induces">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#Gene"/>
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#Pollutant"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#Disease"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.wbd.org/neuro#targets_gene -->
+
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#targets_gene">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#Pollutant"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#Gene"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.wbd.org/neuro#Disease -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#Disease"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#Gene -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#Gene"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#Pollutant -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#Pollutant"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#Scientific_Article -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#Scientific_Article"/>
 </rdf:RDF>
 
 
