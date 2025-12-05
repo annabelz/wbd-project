@@ -1,0 +1,19 @@
+*SPARQL QUERIES*
+
+1. Extracting MeSH ID’s for all Neurodevelopmental disorders:
+
+SELECT DISTINCT ?item ?itemLabel ?meshID ?treeCode WHERE {
+  # Select items that have a MeSH tree code (P672)
+  ?item wdt:P672 ?treeCode .
+
+  # Filter for F03.625 and all descendant tree codes
+  FILTER(STRSTARTS(?treeCode, "F03.625"))
+
+  # Retrieve the associated MeSH Descriptor ID
+  ?item wdt:P486 ?meshID .
+
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "en" .
+  }
+}
+ORDER BY ?treeCode
