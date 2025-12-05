@@ -79,6 +79,12 @@
     
 
 
+    <!-- http://www.wbd.org/neuro#Phenotype -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#Phenotype"/>
+    
+
+
     <!-- http://www.wbd.org/neuro#Pollutant -->
 
     <owl:Class rdf:about="http://www.wbd.org/neuro#Pollutant"/>
