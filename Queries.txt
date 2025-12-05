@@ -2,15 +2,16 @@
 
 1. Extracting MeSH ID’s for all Neurodevelopmental disorders:
 
-SELECT DISTINCT ?item ?itemLabel ?meshID ?treeCode WHERE {
-  # Select items that have a MeSH tree code (P672)
+SELECT DISTINCT ?itemLabel ?meshID ?treeCode ?icd10 WHERE {
+  # MeSH tree code
   ?item wdt:P672 ?treeCode .
-
-  # Filter for F03.625 and all descendant tree codes
   FILTER(STRSTARTS(?treeCode, "F03.625"))
 
-  # Retrieve the associated MeSH Descriptor ID
+  # MeSH descriptor ID
   ?item wdt:P486 ?meshID .
+
+  # OPTIONAL ICD-10 code
+  OPTIONAL { ?item wdt:P494 ?icd10 . }
 
   SERVICE wikibase:label {
     bd:serviceParam wikibase:language "en" .
