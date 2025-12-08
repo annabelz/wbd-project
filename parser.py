@@ -31,6 +31,17 @@ with onto:
 
     class EDRelationship(Thing):
         pass
+    class ScientificArticle(Thing):
+        pass
+
+    class TreeCode(ID):   # TreeCode is a subclass of ID
+        pass
+
+    class has_id(ObjectProperty):
+        domain = [Disease]
+        range = [ID]
+        pass
+        
     class has_exposure(ObjectProperty):
         domain = [EDRelationship]
         range = [Pollutant]
@@ -41,15 +52,36 @@ with onto:
         range = [Disease]
         pass
 
-    class ScientificArticle(Thing):
-        pass
-
     class is_evidenced_by(ObjectProperty):
         domain = [EDRelationship]
         range = [ScientificArticle]
         pass
 
 
+# DiseaseMeSH parsing
+
+df = pd.read_csv("DiseaseMeSH.csv", header=0)
+
+for idx, row in df.iterrows():
+    # Clean names for OWL: replace spaces and remove illegal characters
+    disease_name = str(row["itemLabel"]).replace(" ", "_")
+
+    # TreeCode values contain dots, so convert them for legal OWL names
+    treecode_raw = str(row["treeCode"])
+    treecode_name = treecode_raw.replace(".", "_")
+
+    # Create Disease individual
+    disease_ind = onto.Disease(disease_name)
+
+    # Create TreeCode individual
+    treecode_ind = onto.TreeCode(treecode_name)
+
+    # Link Disease → has_id → TreeCode
+    disease_ind.has_id.append(treecode_ind)
+
+# TODO: finish adding more objects and properties
+
+# disease_chems parsing
 disease_chems = pd.read_csv("CTD_disease_chems.csv",
                             comment="#",
                             header=None)
