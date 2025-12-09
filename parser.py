@@ -108,9 +108,9 @@ disease_chems = pd.read_csv("CTD_disease_chems.csv",
 num_entries = len(disease_chems)
 for i in range(num_entries):
     # extract vars
-    chem_name = onto.Name(disease_chems[1][i])
+    chem_name = onto.Name(disease_chems[1][i].replace(" ", "_"))
     chem_id = onto.Chemical(disease_chems[2][i])
-    disease_name = onto.Name(disease_chems[4][i])
+    disease_name = onto.Name(disease_chems[4][i].replace(" ", "_"))
     disease_id = onto.Disease(disease_chems[5][i].replace('MESH:', ''))
     edr_name = onto.EDRelationship(f"{chem_id}_{disease_id}")
     gene = onto.Gene(disease_chems[10][i])
@@ -128,4 +128,4 @@ for i in range(num_entries):
     disease_id.has_name.append(disease_name)
     
 # # Save back to OWL
-onto.save("wbd.owl")
+onto.save("wbd_populated.owl")
