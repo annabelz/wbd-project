@@ -21,30 +21,42 @@ with onto:
     class Disease(Thing):
         pass
 
-    class Pollutant(Thing):
+    class Chemical(Thing):
         pass
 
-    class ID(Thing):
+    class Gene(Thing):
         pass
-    class MeSH(ID):
+    class Name(Thing):
         pass
-
     class EDRelationship(Thing):
         pass
     class ScientificArticle(Thing):
         pass
 
-    class TreeCode(ID):   # TreeCode is a subclass of ID
+    class TreeCode(Thing):  
         pass
 
-    class has_id(ObjectProperty):
+    class Icd10(Thing):  
+        pass
+
+    class has_treecode(ObjectProperty):
         domain = [Disease]
-        range = [ID]
+        range = [TreeCode]
+        pass
+
+    class has_icd10(ObjectProperty):
+        domain = [Disease]
+        range = [Icd10]
+        pass
+
+    class has_name(ObjectProperty):
+        domain = [Chemical, Disease]
+        range = [Name]
         pass
         
     class has_exposure(ObjectProperty):
         domain = [EDRelationship]
-        range = [Pollutant]
+        range = [Chemical]
         pass
 
     class has_disease(ObjectProperty):
@@ -57,33 +69,38 @@ with onto:
         range = [ScientificArticle]
         pass
 
+    class is_associated_with(ObjectProperty):
+        domain = [EDRelationship]
+        range = [Gene]
+        pass
+
+    # TODO: add is_child_of and is_parent_of if relevant
+
 
 # DiseaseMeSH parsing
 
-df = pd.read_csv("DiseaseMeSH.csv", header=0)
+disease_mesh = pd.read_csv("DiseaseMeSH.csv", header=0)
 
-counter = 0
+for i in range(len(disease_mesh)):
+    # extract vars
+    print("Disease name", disease_mesh["itemLabel"][i])
+    disease_name = disease_mesh["itemLabel"][i].replace(" ", "_")
+    disease_ID = disease_mesh["meshID"][i]
+    disease_tree = disease_mesh["treeCode"][i].replace(".", "_")
+    disease_icd = disease_mesh["icd10"][i]
 
-for idx, row in df.iterrows():
-    # Clean names for OWL: replace spaces and remove illegal characters
-    disease_name = str(row["itemLabel"]).replace(" ", "_")
-
-    # TreeCode values contain dots, so convert them for legal OWL names
-    treecode_raw = str(row["treeCode"])
-    treecode_name = treecode_raw.replace(".", "_")
-
-    # Create Disease individual
-    disease_ind = onto.Disease(disease_name)
-
-    # Create TreeCode individual
-    treecode_ind = onto.TreeCode(treecode_name)
+    # create objects per row
+    disease_ID_obj = onto.Disease(disease_ID)
+    disease_name_obj = onto.Name(disease_name)
+    disease_tree_obj = onto.TreeCode(disease_tree)
+    disease_icd_obj = onto.Icd10(disease_icd)
+    
+    # create relationships
 
     # Link Disease → has_id → TreeCode
-    disease_ind.has_id.append(treecode_ind)
-
-    counter += 1
-    if counter >= 10:
-        break
+    disease_ID_obj.has_treecode.append(disease_tree_obj)
+    disease_ID_obj.has_name.append(disease_name_obj)
+    disease_ID_obj.has_icd10.append(disease_icd_obj)
 
 
 # TODO: finish adding more objects and properties
@@ -95,17 +112,17 @@ disease_chems = pd.read_csv("CTD_disease_chems.csv",
 
 # TO CHANGE ONCE LIST HAS BEEN UPDATED: 
 
-# num_entries = disease_chems
+# num_entries = len(disease_chems)
 num_entries = 20
 
 for i in range(num_entries):
-    P1 = onto.Pollutant(disease_chems[1][i])
+    C1 = onto.Chemical(disease_chems[1][i])
     D1 = onto.Disease(disease_chems[4][i])
     EDR = onto.EDRelationship(f"{disease_chems[1][i]}_{disease_chems[4][i]}")
-    ChemID = onto.MeSH(disease_chems[1][2])
+    ChemID = onto.Name(disease_chems[1][2])
 
     disease_mesh = disease_chems[5][i].replace('MESH:', '')
-    DiseaseID = onto.MeSH(disease_mesh)
+    DiseaseID = onto.Name(disease_mesh)
 
     val = disease_chems[8][i]
     if isinstance(val, str):
@@ -113,9 +130,9 @@ for i in range(num_entries):
             SA1 = onto.ScientificArticle(article)
             EDR.is_evidenced_by.append(SA1)
 
-    EDR.has_exposure.append(P1)
+    EDR.has_exposure.append(C1)
     EDR.has_disease.append(D1)
-    P1.has_id.append(ChemID)
+    C1.has_name.append(ChemID)
     
 # # Save back to OWL
 onto.save("wbd.owl")
