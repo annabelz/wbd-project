@@ -8,13 +8,25 @@ g = Graph()
 g.parse("wbd_populated.owl")
 
 q = """
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX neuro: <http://www.wbd.org/neuro#>
 
-SELECT ?cls ?label WHERE {
-    ?cls a <http://www.w3.org/2002/07/owl#Class> .
-    OPTIONAL { ?cls rdfs:label ?label }
+SELECT ?EDRelationship ?DiseaseLabel ?NameLabel ?ChemicalLabel
+WHERE {
+    ?EDRelationship a neuro:EDRelationship .
+    ?EDRelationship neuro:has_exposure ?Chemical .
+    ?EDRelationship neuro:has_disease ?Disease .
+    ?Disease neuro:has_name ?Name .
+    
+    OPTIONAL { ?Disease rdfs:label ?DiseaseLabel }
+    OPTIONAL { ?Name rdfs:label ?NameLabel }
+    OPTIONAL { ?Chemical rdfs:label ?ChemicalLabel }
 }
+LIMIT 20
 """
 
-for row in g.query(q):
-    print(row)
+for edr, disease_label, name_label, chemical_label in g.query(q):
+    print(f"Disease label: {disease_label}")
+    print(f"Disease name label: {name_label}")
+    print(f"Chemical label: {chemical_label}")
+    print(f"EDRelationship: {edr}")
+    print("-----")

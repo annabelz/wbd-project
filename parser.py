@@ -82,10 +82,10 @@ disease_mesh = pd.read_csv("DiseaseMeSH.csv", header=0)
 
 for i in range(len(disease_mesh)):
     # extract vars
-    disease_name = disease_mesh["itemLabel"][i].replace(" ", "_")
-    disease_ID = disease_mesh["meshID"][i]
-    disease_tree = disease_mesh["treeCode"][i].replace(".", "_")
-    disease_icd = disease_mesh["icd10"][i]
+    disease_name = str(disease_mesh["itemLabel"][i].replace(" ", "_"))
+    disease_ID = str(disease_mesh["meshID"][i])
+    disease_tree = str(disease_mesh["treeCode"][i].replace(".", "_"))
+    disease_icd = str(disease_mesh["icd10"][i])
 
     # create objects per row
     disease_ID_obj = onto.Disease(disease_ID)
@@ -93,6 +93,12 @@ for i in range(len(disease_mesh)):
     disease_tree_obj = onto.TreeCode(disease_tree)
     disease_icd_obj = onto.Icd10(disease_icd)
     
+    # ADD LABELS HERE
+    disease_ID_obj.label = [disease_ID]  # human-readable
+    disease_name_obj.label = [str(disease_mesh["itemLabel"][i])]
+    disease_tree_obj.label = [disease_tree]
+    disease_icd_obj.label = [disease_icd]
+
     # create relationships
     disease_ID_obj.has_treecode.append(disease_tree_obj)
     disease_ID_obj.has_name.append(disease_name_obj)
@@ -103,29 +109,43 @@ disease_chems = pd.read_csv("CTD_disease_chems.csv",
                             comment="#",
                             header=None)
 
-# TO CHANGE ONCE LIST HAS BEEN UPDATED: 
-
 num_entries = len(disease_chems)
 for i in range(num_entries):
     # extract vars
-    chem_name = onto.Name(disease_chems[1][i].replace(" ", "_"))
-    chem_id = onto.Chemical(disease_chems[2][i])
-    disease_name = onto.Name(disease_chems[4][i].replace(" ", "_"))
-    disease_id = onto.Disease(disease_chems[5][i].replace('MESH:', ''))
-    edr_name = onto.EDRelationship(f"{chem_id}_{disease_id}")
-    gene = onto.Gene(disease_chems[10][i])
+    chem_name = str(disease_chems[1][i].replace(" ", "_"))
+    chem_id = str(disease_chems[2][i])
+    disease_name = str(disease_chems[4][i].replace(" ", "_"))
+    disease_id = str(disease_chems[5][i].replace('MESH:', ''))
+    edr_name = str(f"{chem_id}_{disease_id}")
+    gene = str(disease_chems[10][i])
+
+    chem_name_obj = onto.Name(chem_name)
+    chem_id_obj = onto.Chemical(chem_id)
+    disease_name_obj = onto.Name(disease_name)
+    disease_id_obj = onto.Disease(disease_id)
+    edr_name_obj = onto.EDRelationship(edr_name)
+    gene_obj = onto.Gene(gene)
 
     pubmed_id_list = disease_chems[8][i]
     if isinstance(pubmed_id_list, str):
         for article in pubmed_id_list.split("|"):
-            SA1 = onto.ScientificArticle(article)
-            edr_name.is_evidenced_by.append(SA1)
+            SA1_obj = onto.ScientificArticle(str(article))
+            SA1_obj.label = [str(article)]
+            edr_name_obj.is_evidenced_by.append(SA1_obj)
 
-    edr_name.has_exposure.append(chem_id)
-    edr_name.has_disease.append(disease_id)
-    edr_name.is_associated_with.append(gene)
-    chem_id.has_name.append(chem_name)
-    disease_id.has_name.append(disease_name)
+    # ADD LABELS HERE
+    chem_name_obj.label = [disease_chems[1][i]]  
+    chem_id_obj.label = [chem_id]
+    disease_name_obj.label = [disease_chems[4][i]]
+    disease_id_obj.label = [disease_id]
+    edr_name_obj.label = [edr_name]
+    gene_obj.label = [gene]
+
+    edr_name_obj.has_exposure.append(chem_id_obj)
+    edr_name_obj.has_disease.append(disease_id_obj)
+    edr_name_obj.is_associated_with.append(gene_obj)
+    chem_id_obj.has_name.append(chem_name_obj)
+    disease_id_obj.has_name.append(disease_name_obj)
     
 # # Save back to OWL
 onto.save("wbd_populated.owl")
