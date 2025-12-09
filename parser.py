@@ -117,6 +117,7 @@ for i in range(num_entries):
     disease_name = onto.Name(disease_chems[4][i])
     disease_id = onto.Disease(disease_chems[5][i].replace('MESH:', ''))
     edr_name = onto.EDRelationship(f"{chem_id}_{disease_id}")
+    gene = onto.Gene(disease_chems[10][i])
 
     pubmed_id_list = disease_chems[8][i]
     if isinstance(pubmed_id_list, str):
@@ -126,6 +127,7 @@ for i in range(num_entries):
 
     edr_name.has_exposure.append(chem_id)
     edr_name.has_disease.append(disease_id)
+    edr_name.is_associated_with.append(gene)
     chem_id.has_name.append(chem_name)
     disease_id.has_name.append(disease_name)
     
