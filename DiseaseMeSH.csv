@@ -1,41 +1,5 @@
 itemLabel,meshID,treeCode,icd10
-neurodevelopmental disorder,D065886,F03.625,
-separation anxiety disorder,D001010,F03.625.047,F93.0
-attention deficit and disruptive behavior disorders,D019958,F03.625.094,
-attention deficit hyperactivity disorder,D001289,F03.625.094.150,F90.0
-conduct disorder,D019955,F03.625.094.300,
-oppositional defiant disorder,D000096865,F03.625.094.475,F91.3
-sluggish cognitive tempo,D000087346,F03.625.094.650,
-child behavior disorders,D002653,F03.625.141,
 pervasive developmental disorder,D002659,F03.625.164,F84
 autism spectrum disorder,D000067877,F03.625.164.113,
 Asperger syndrome,D020817,F03.625.164.113.250,F84.5
 autism,D001321,F03.625.164.113.500,F84.0
-communication disorder,D003147,F03.625.374,
-childhood-onset fluency disorder,D000067454,F03.625.374.125,
-learning disability,D007859,F03.625.374.188,
-specific language impairment,D000080888,F03.625.374.188.350,
-specific learning disability,D000067559,F03.625.374.188.700,
-agraphia,D000381,F03.625.374.188.700.125,
-dyscalculia,D060705,F03.625.374.188.700.250,F81.2
-dyscalculia,D060705,F03.625.374.188.700.250,R48.8
-dyslexia,D004410,F03.625.374.188.700.500,
-visual verbal agnosia,D004411,F03.625.374.188.700.500.500,R48.0
-social communication disorder,D000067404,F03.625.374.250,
-speech sound disorder,D066229,F03.625.374.500,
-developmental disability,D002658,F03.625.421,
-intellectual disability,D008607,F03.625.539,F79
-learning disability,D007859,F03.625.562,
-specific learning disability,D000067559,F03.625.562.700,
-agraphia,D000381,F03.625.562.700.125,
-dyscalculia,D060705,F03.625.562.700.250,F81.2
-dyscalculia,D060705,F03.625.562.700.250,R48.8
-dyslexia,D004410,F03.625.562.700.500,
-visual verbal agnosia,D004411,F03.625.562.700.500.500,R48.0
-developmental coordination disorder,D019957,F03.625.813,
-muteness,D009155,F03.625.875,
-attachment disorder,D019962,F03.625.937,
-childhood schizophrenia,D012561,F03.625.968,F20.8xx3
-stereotypic movement disorder,D019956,F03.625.984,F98.4
-tic disorder,D013981,F03.625.992,
-Tourette syndrome,D005879,F03.625.992.850,F95.295.2.
