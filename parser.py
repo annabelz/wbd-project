@@ -75,6 +75,7 @@ with onto:
         pass
 
     # TODO: add is_child_of and is_parent_of if relevant
+    # TODO: remove Name class mentions
 
 # DiseaseMeSH parsing
 
