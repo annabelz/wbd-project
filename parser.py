@@ -62,6 +62,8 @@ with onto:
 
 df = pd.read_csv("DiseaseMeSH.csv", header=0)
 
+counter = 0
+
 for idx, row in df.iterrows():
     # Clean names for OWL: replace spaces and remove illegal characters
     disease_name = str(row["itemLabel"]).replace(" ", "_")
@@ -79,6 +81,11 @@ for idx, row in df.iterrows():
     # Link Disease → has_id → TreeCode
     disease_ind.has_id.append(treecode_ind)
 
+    counter += 1
+    if counter >= 10:
+        break
+
+
 # TODO: finish adding more objects and properties
 
 # disease_chems parsing
@@ -86,11 +93,19 @@ disease_chems = pd.read_csv("CTD_disease_chems.csv",
                             comment="#",
                             header=None)
 
-for i in range(len(disease_chems)):
-    print("Pollutant i : ", disease_chems[1][i], i, "pubmed: ", disease_chems[8][i])
+# TO CHANGE ONCE LIST HAS BEEN UPDATED: 
+
+# num_entries = disease_chems
+num_entries = 20
+
+for i in range(num_entries):
     P1 = onto.Pollutant(disease_chems[1][i])
     D1 = onto.Disease(disease_chems[4][i])
     EDR = onto.EDRelationship(f"{disease_chems[1][i]}_{disease_chems[4][i]}")
+    ChemID = onto.MeSH(disease_chems[1][2])
+
+    disease_mesh = disease_chems[5][i].replace('MESH:', '')
+    DiseaseID = onto.MeSH(disease_mesh)
 
     val = disease_chems[8][i]
     if isinstance(val, str):
@@ -100,6 +115,7 @@ for i in range(len(disease_chems)):
 
     EDR.has_exposure.append(P1)
     EDR.has_disease.append(D1)
+    P1.has_id.append(ChemID)
     
 # # Save back to OWL
 onto.save("wbd.owl")
