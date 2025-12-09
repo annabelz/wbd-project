@@ -1,149 +1,493 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rdf:RDF
-	xmlns="http://www.wbd.org/neuro#"
-	xmlns:owl="http://www.w3.org/2002/07/owl#"
-	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	xmlns:xml="http://www.w3.org/XML/1998/namespace"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.wbd.org/neuro#"
+     xml:base="http://www.wbd.org/neuro"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.wbd.org/neuro"/>
+    
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
-</rdf:Description>
-<!--  -->
-<!--  -->
-<!-- ################################################################# -->
-<!-- # -->
-<!-- #    Object Properties -->
-<!-- # -->
-<!-- ################################################################# -->
-<!--  -->
-<!--  -->
-<!-- http://www.wbd.org/neuro#has_disease -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#has_disease">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-	<rdfs:domain rdf:resource="http://www.wbd.org/neuro#EDRelationship"/>
-	<rdfs:range rdf:resource="http://www.wbd.org/neuro#Disease"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#has_exposure -->
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#has_exposure">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-	<rdfs:domain rdf:resource="http://www.wbd.org/neuro#EDRelationship"/>
-	<rdfs:range rdf:resource="http://www.wbd.org/neuro#Exposure"/>
-	<rdfs:range rdf:resource="http://www.wbd.org/neuro#Pollutant"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#has_id -->
+    
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#has_id">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-	<rdfs:domain rdf:resource="http://www.wbd.org/neuro#Disease"/>
-	<rdfs:domain rdf:resource="http://www.wbd.org/neuro#Exposure"/>
-	<rdfs:range rdf:resource="http://www.wbd.org/neuro#ID"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#is_child_of -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#is_child_of">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-	<rdfs:domain rdf:resource="http://www.wbd.org/neuro#Disease"/>
-	<rdfs:range rdf:resource="http://www.wbd.org/neuro#Disease"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#is_evidenced_by -->
+    <!-- http://www.wbd.org/neuro#has_disease -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#is_evidenced_by">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-	<rdfs:domain rdf:resource="http://www.wbd.org/neuro#EDRelationship"/>
-	<rdfs:range rdf:resource="http://www.wbd.org/neuro#ScientificArticle"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#is_parent_of -->
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#has_disease">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#EDRelationship"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#Disease"/>
+    </owl:ObjectProperty>
+    
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#is_parent_of">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-	<rdfs:domain rdf:resource="http://www.wbd.org/neuro#Disease"/>
-	<rdfs:range rdf:resource="http://www.wbd.org/neuro#Disease"/>
-</rdf:Description>
-<!--  -->
-<!--  -->
-<!--  -->
-<!-- ################################################################# -->
-<!-- # -->
-<!-- #    Classes -->
-<!-- # -->
-<!-- ################################################################# -->
-<!--  -->
-<!--  -->
-<!-- http://www.wbd.org/neuro#Disease -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#Disease">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#EDRelationship -->
+    <!-- http://www.wbd.org/neuro#has_exposure -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#EDRelationship">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#Exposure -->
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#has_exposure">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#EDRelationship"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#Pollutant"/>
+    </owl:ObjectProperty>
+    
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#Exposure">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#Gene -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#Gene">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-	<rdfs:subClassOf rdf:resource="http://www.wbd.org/neuro#Exposure"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#ID -->
+    <!-- http://www.wbd.org/neuro#has_id -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#ID">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#MeSH -->
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#has_id">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#Disease"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#ID"/>
+    </owl:ObjectProperty>
+    
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#MeSH">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-	<rdfs:subClassOf rdf:resource="http://www.wbd.org/neuro#ID"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#NCBI -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#NCBI">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-	<rdfs:subClassOf rdf:resource="http://www.wbd.org/neuro#ID"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#Pollutant -->
+    <!-- http://www.wbd.org/neuro#is_associated_with -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#Pollutant">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-	<rdfs:subClassOf rdf:resource="http://www.wbd.org/neuro#Exposure"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#ScientificArticle -->
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#is_associated_with">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#EDRelationship"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#Gene"/>
+    </owl:ObjectProperty>
+    
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#ScientificArticle">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-	<rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-</rdf:Description>
-<!--  -->
-<!-- http://www.wbd.org/neuro#TreeCode -->
 
-<rdf:Description rdf:about="http://www.wbd.org/neuro#TreeCode">
-	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-	<rdfs:subClassOf rdf:resource="http://www.wbd.org/neuro#ID"/>
-</rdf:Description>
-<!--  -->
+    <!-- http://www.wbd.org/neuro#is_child_of -->
+
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#is_child_of">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#Disease"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#Disease"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.wbd.org/neuro#is_evidenced_by -->
+
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#is_evidenced_by">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#EDRelationship"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#ScientificArticle"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.wbd.org/neuro#is_parent_of -->
+
+    <owl:ObjectProperty rdf:about="http://www.wbd.org/neuro#is_parent_of">
+        <rdfs:domain rdf:resource="http://www.wbd.org/neuro#Disease"/>
+        <rdfs:range rdf:resource="http://www.wbd.org/neuro#Disease"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.wbd.org/neuro#Disease -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#Disease"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#EDRelationship -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#EDRelationship"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#Gene -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#Gene"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#ID -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#ID"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#MeSH -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#MeSH">
+        <rdfs:subClassOf rdf:resource="http://www.wbd.org/neuro#ID"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.wbd.org/neuro#NCBI -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#NCBI">
+        <rdfs:subClassOf rdf:resource="http://www.wbd.org/neuro#ID"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.wbd.org/neuro#Pollutant -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#Pollutant"/>
+    
+
+
+    <!-- http://www.wbd.org/neuro#ScientificArticle -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#ScientificArticle">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.wbd.org/neuro#TreeCode -->
+
+    <owl:Class rdf:about="http://www.wbd.org/neuro#TreeCode">
+        <rdfs:subClassOf rdf:resource="http://www.wbd.org/neuro#ID"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.wbd.org/neuro#D002659 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#D002659">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#MeSH"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#D065886 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#D065886">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#MeSH"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_047 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_047">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_094 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_094">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_094_150 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_094_150">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_094_300 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_094_300">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_094_475 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_094_475">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_094_650 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_094_650">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_141 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_141">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_164 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_164">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_164_113 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_164_113">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_164_113_250 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_164_113_250">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_164_113_500 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_164_113_500">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_125 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_125">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_188 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_188">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_188_350 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_188_350">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_188_700 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_188_700">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_188_700_125 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_188_700_125">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_188_700_250 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_188_700_250">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_188_700_500 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_188_700_500">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_188_700_500_500 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_188_700_500_500">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_250 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_250">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_374_500 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_374_500">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_421 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_421">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_539 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_539">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_562 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_562">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_562_700 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_562_700">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_562_700_125 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_562_700_125">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_562_700_250 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_562_700_250">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_562_700_500 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_562_700_500">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_562_700_500_500 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_562_700_500_500">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_813 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_813">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_875 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_875">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_937 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_937">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_968 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_968">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_984 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_984">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_992 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_992">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.wbd.org/neuro#F03_625_992_850 -->
+
+    <owl:NamedIndividual rdf:about="http://www.wbd.org/neuro#F03_625_992_850">
+        <rdf:type rdf:resource="http://www.wbd.org/neuro#TreeCode"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
 <!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
 
-</rdf:RDF>
