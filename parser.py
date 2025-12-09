@@ -98,8 +98,6 @@ for i in range(len(disease_mesh)):
     disease_ID_obj.has_name.append(disease_name_obj)
     disease_ID_obj.has_icd10.append(disease_icd_obj)
 
-# TODO: finish adding more objects and properties
-
 # disease_chems parsing
 disease_chems = pd.read_csv("CTD_disease_chems.csv",
                             comment="#",
@@ -107,9 +105,7 @@ disease_chems = pd.read_csv("CTD_disease_chems.csv",
 
 # TO CHANGE ONCE LIST HAS BEEN UPDATED: 
 
-# num_entries = len(disease_chems)
-num_entries = 20
-
+num_entries = len(disease_chems)
 for i in range(num_entries):
     # extract vars
     chem_name = onto.Name(disease_chems[1][i])
