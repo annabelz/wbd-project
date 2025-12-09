@@ -2,3 +2,4 @@
 venv310/
 *.pyc
 __pycache__/
+wbd.owl
