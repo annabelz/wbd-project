@@ -76,14 +76,12 @@ with onto:
 
     # TODO: add is_child_of and is_parent_of if relevant
 
-
 # DiseaseMeSH parsing
 
 disease_mesh = pd.read_csv("DiseaseMeSH.csv", header=0)
 
 for i in range(len(disease_mesh)):
     # extract vars
-    print("Disease name", disease_mesh["itemLabel"][i])
     disease_name = disease_mesh["itemLabel"][i].replace(" ", "_")
     disease_ID = disease_mesh["meshID"][i]
     disease_tree = disease_mesh["treeCode"][i].replace(".", "_")
@@ -96,12 +94,9 @@ for i in range(len(disease_mesh)):
     disease_icd_obj = onto.Icd10(disease_icd)
     
     # create relationships
-
-    # Link Disease → has_id → TreeCode
     disease_ID_obj.has_treecode.append(disease_tree_obj)
     disease_ID_obj.has_name.append(disease_name_obj)
     disease_ID_obj.has_icd10.append(disease_icd_obj)
-
 
 # TODO: finish adding more objects and properties
 
@@ -116,23 +111,23 @@ disease_chems = pd.read_csv("CTD_disease_chems.csv",
 num_entries = 20
 
 for i in range(num_entries):
-    C1 = onto.Chemical(disease_chems[1][i])
-    D1 = onto.Disease(disease_chems[4][i])
-    EDR = onto.EDRelationship(f"{disease_chems[1][i]}_{disease_chems[4][i]}")
-    ChemID = onto.Name(disease_chems[1][2])
+    # extract vars
+    chem_name = onto.Name(disease_chems[1][i])
+    chem_id = onto.Chemical(disease_chems[2][i])
+    disease_name = onto.Name(disease_chems[4][i])
+    disease_id = onto.Disease(disease_chems[5][i].replace('MESH:', ''))
+    edr_name = onto.EDRelationship(f"{chem_id}_{disease_id}")
 
-    disease_mesh = disease_chems[5][i].replace('MESH:', '')
-    DiseaseID = onto.Name(disease_mesh)
-
-    val = disease_chems[8][i]
-    if isinstance(val, str):
-        for article in val.split("|"):
+    pubmed_id_list = disease_chems[8][i]
+    if isinstance(pubmed_id_list, str):
+        for article in pubmed_id_list.split("|"):
             SA1 = onto.ScientificArticle(article)
-            EDR.is_evidenced_by.append(SA1)
+            edr_name.is_evidenced_by.append(SA1)
 
-    EDR.has_exposure.append(C1)
-    EDR.has_disease.append(D1)
-    C1.has_name.append(ChemID)
+    edr_name.has_exposure.append(chem_id)
+    edr_name.has_disease.append(disease_id)
+    chem_id.has_name.append(chem_name)
+    disease_id.has_name.append(disease_name)
     
 # # Save back to OWL
 onto.save("wbd.owl")
