@@ -1,139 +1,87 @@
-import os, time
+"""
+ctd_relation_nli.py
+
+Input:  input_ctd.csv  (columns: chemical,disease,pmid)
+Output: ctd_relation_results.csv
+
+Uses an NLI model (tasksource/deberta-small-long-nli) to score whether
+a sentence/abstract entails the hypothesis "Exposure to {chemical} causes {disease}."
+Selects the sentence with the highest entailment probability as supporting evidence.
+
+Install required packages:
+pip install biopython pandas tqdm nltk transformers torch rapidfuzz
+"""
+
+import os
+import time
 from pathlib import Path
-import json
+import logging
 import pandas as pd
 from tqdm.auto import tqdm
 import nltk
-nltk.download('punkt')
-nltk.download('punkt_tab')
+nltk.download("punkt", quiet=True)
 from Bio import Entrez
 from rapidfuzz import fuzz
 import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from typing import List, Optional
 
-# ----------------------
-# === USER CONFIG ===
-# ----------------------
-INPUT_CSV = 'input_ctd.csv'  # upload your CSV with columns: chemical,disease,pmid
-OUTPUT_CSV = 'ctd_relation_results.csv'
+# ---------- USER CONFIG ----------
+INPUT_CSV = "input_ctd.csv"
+OUTPUT_CSV = "ctd_relation_results.csv"
 
-Entrez.email = 'graham.gould@mail.mcgill.ca'
-Entrez.api_key = None  # Optional: set your NCBI API key if you have one
+Entrez.email = "graham.gould@mail.mcgill.ca"  # your email
+Entrez.api_key = None  # optional: set your NCBI API key here
 
-BIOBERT_MODEL = 'tasksource/deberta-small-long-nli'
-POSITIVE_LABEL_INDEX = 1
+NLI_MODEL = "tasksource/deberta-small-long-nli"
 
-# ----------------------
-# simple cache for PMIDs
-cache_dir = Path('pmid_cache')
-cache_dir.mkdir(exist_ok=True)
+HYPOTHESIS_TEMPLATES = [
+    "Exposure to {chemical} causes {disease}.",
+    "{chemical} exposure increases the risk of {disease}.",
+    "{chemical} is associated with {disease}.",
+    "{chemical} is linked to {disease}.",
+    "{chemical} exposure is related to {disease}."
+]
 
-def fetch_abstract(pmid, use_cache=True, sleep_between=0.34):
-    pmid = str(pmid)
-    cache_file = cache_dir / f"{pmid}.txt"
+FUZZY_THRESHOLD_SENTENCE = 75
+FUZZY_THRESHOLD_WINDOW = 70
+MAX_WINDOW_SENTENCES = 3
+
+CACHE_DIR = Path("pmid_cache")
+CACHE_DIR.mkdir(exist_ok=True)
+SLEEP_BETWEEN_REQUESTS = 0.34
+
+DEVICE = 0 if torch.cuda.is_available() else -1
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+
+# ---------- Utilities ----------
+import re
+
+def fetch_abstract(pmid: str, use_cache=True, sleep_between=SLEEP_BETWEEN_REQUESTS) -> str:
+    pmid = str(pmid).strip()
+    if not pmid:
+        return ""
+    cache_file = CACHE_DIR / f"{pmid}.txt"
     if use_cache and cache_file.exists():
-        return cache_file.read_text(encoding='utf-8')
+        return cache_file.read_text(encoding="utf-8")
     try:
-        handle = Entrez.efetch(db='pubmed', id=pmid, rettype='abstract', retmode='text')
+        handle = Entrez.efetch(db="pubmed", id=pmid, rettype="abstract", retmode="text")
         text = handle.read()
         handle.close()
+        text = re.sub(r"\s+", " ", text).strip()
         if use_cache:
-            cache_file.write_text(text, encoding='utf-8')
+            cache_file.write_text(text, encoding="utf-8")
         time.sleep(sleep_between)
         return text
     except Exception as e:
-        print(f"Error fetching PMID {pmid}: {e}")
-        return ''
+        logging.warning(f"Failed to fetch PMID {pmid}: {e}")
+        return ""
 
-# fuzzy-based span finder and entity marker inserter
-def find_best_span(sentence, entity, min_ratio=70):
-    """Find the best substring span in 'sentence' matching 'entity' using fuzzy partial ratio.
-    Returns (start_idx, end_idx, matched_text) or None if not found."""
-    s = sentence
-    t = entity.lower()
-    # direct containment
-    low = s.lower()
-    idx = low.find(t)
-    if idx != -1:
-        return idx, idx+len(t), s[idx:idx+len(t)]
-    # sliding window fuzzy: check substrings up to length of sentence
-    best = (None, None, None, 0)
-    words = s.split()
-    n = len(words)
-    # try windows of up to 6 words for speed
-    max_window = min(6, n)
-    for w in range(1, max_window+1):
-        for i in range(0, n-w+1):
-            span = ' '.join(words[i:i+w])
-            score = fuzz.partial_ratio(t, span.lower())
-            if score > best[3]:
-                # compute character indices
-                # find span occurrence in sentence (first occurrence of that sequence)
-                start_char = s.find(span)
-                if start_char >= 0:
-                    best = (start_char, start_char+len(span), span, score)
-    if best[3] >= min_ratio:
-        return best[0], best[1], best[2]
-    return None
-
-
-def insert_entity_markers(sentence, chemical, disease):
-    """Insert <e1>...</e1> around chemical and <e2>...</e2> around disease.
-    Returns marked_sentence. If spans overlap or can't be found, returns None.
-    """
-    s = sentence
-    c_span = find_best_span(s, chemical, min_ratio=65)
-    d_span = find_best_span(s, disease, min_ratio=65)
-    if not c_span or not d_span:
-        return None
-    c_start, c_end, c_text = c_span
-    d_start, d_end, d_text = d_span
-    # if spans overlap, choose the one with higher fuzz score or abort
-    if not (c_end <= d_start or d_end <= c_start):
-        # overlapping: try to break ties by checking exact containment
-        if c_text.lower() == s[c_start:c_end].lower() and d_text.lower() == s[d_start:d_end].lower():
-            # proceed but ensure order: e1 must be chemical, we'll place whichever comes first
-            pass
-        else:
-            return None
-    # ensure we insert tags in reverse order of indices to preserve indices
-    parts = []
-    if c_start < d_start:
-        # chemical first
-        before = s[:c_start]
-        chem = s[c_start:c_end]
-        middle = s[c_end:d_start]
-        dise = s[d_start:d_end]
-        after = s[d_end:]
-        marked = f"{before}<e1>{chem}</e1>{middle}<e2>{dise}</e2>{after}"
-    else:
-        before = s[:d_start]
-        dise = s[d_start:d_end]
-        middle = s[d_end:c_start]
-        chem = s[c_start:c_end]
-        after = s[c_end:]
-        marked = f"{before}<e2>{dise}</e2>{middle}<e1>{chem}</e1>{after}"
-    return marked
-
-# loading the BIOBERT model, else fallback to zero-shot NLI
-use_re_model = True
-try:
-    print('Loading RE model:', BIOBERT_MODEL)
-    re_tokenizer = AutoTokenizer.from_pretrained(BIOBERT_MODEL)
-    re_model = AutoModelForSequenceClassification.from_pretrained(BIOBERT_MODEL)
-    re_model.eval()
-    print('Loaded RE model successfully.')
-except Exception as e:
-    print('Failed to load RE model:', e)
-    print('Falling back to zero-shot NLI (facebook/bart-large-mnli)')
-    use_re_model = False
-    nli_model_name = 'facebook/bart-large-mnli'
-    classifier = pipeline('zero-shot-classification', model=nli_model_name, device=0 if torch.cuda.is_available() else -1)
-
-import nltk
-from rapidfuzz import fuzz
-
-def simple_entity_match(sentence, target, threshold=80):
+def simple_entity_match(sentence: str, target: str, threshold: int = FUZZY_THRESHOLD_SENTENCE) -> bool:
+    if not sentence or not target:
+        return False
     s = sentence.lower()
     t = target.lower()
     if t in s:
@@ -141,99 +89,185 @@ def simple_entity_match(sentence, target, threshold=80):
     score = fuzz.partial_ratio(t, s)
     return score >= threshold
 
-def score_sentence_with_re_model(marked_sentence):
-    """Run the RE model on a sentence with inserted markers. Return probability of relation (index POSITIVE_LABEL_INDEX)."""
-    inputs = re_tokenizer(marked_sentence, return_tensors='pt', truncation=True, max_length=512)
-    with torch.no_grad():
-        logits = re_model(**inputs).logits
-        probs = torch.softmax(logits, dim=1).cpu().numpy()[0]
-        return float(probs[POSITIVE_LABEL_INDEX])
-
-def score_sentence_with_nli(sentence, chemical, disease):
-    labels = [f"{chemical} associated with {disease}", f"{chemical} causes {disease}", "no relation"]
-    out = classifier(sentence, labels)
-    scores = dict(zip(out['labels'], out['scores']))
-    assoc = scores.get(labels[0], 0.0)
-    cause = scores.get(labels[1], 0.0)
-    return float(max(assoc, cause))
-
-def process_row(chemical, disease, pmid):
-    abstract_text = fetch_abstract(pmid)
-    if not abstract_text:
-        return {'pmid': pmid, 'chemical': chemical, 'disease': disease, 'best_sentence': None, 'confidence': 0.0, 'note': 'no_abstract'}
-    sentences = nltk.tokenize.sent_tokenize(abstract_text)
+def find_candidate_sentences(abstract_text: str, chemical: str, disease: str) -> List[str]:
+    sentences = nltk.sent_tokenize(abstract_text)
     candidates = []
+
     for sent in sentences:
-        if simple_entity_match(sent, chemical, threshold=75) and simple_entity_match(sent, disease, threshold=75):
+        # include any sentence mentioning chemical or disease
+        if simple_entity_match(sent, chemical) or simple_entity_match(sent, disease):
             candidates.append(sent)
-    # if no direct sentence found, try windowed join
-    if not candidates:
-        for i, sent in enumerate(sentences):
-            if simple_entity_match(sent, chemical, threshold=85):
-                window = sentences[max(0, i-2):min(len(sentences), i+3)]
-                joined = ' '.join(window)
-                if simple_entity_match(joined, disease, threshold=75):
-                    candidates.append(joined)
-    if not candidates:
-        return {'pmid': pmid, 'chemical': chemical, 'disease': disease, 'best_sentence': None, 'confidence': 0.0, 'note': 'no_candidate_sentence'}
 
-    best_sent = None
-    best_score = -1.0
-    used_method = 're_model' if use_re_model else 'nli'
-    for sent in candidates:
-        if use_re_model:
-            marked = insert_entity_markers(sent, chemical, disease)
-            if not marked:
-                # try swapping roles if insertion failed
-                marked = insert_entity_markers(sent, disease, chemical)
-                # if swapped, the model expects e1=chemical, so it's wrong — prefer fallback
-            if not marked:
-                # fallback to NLI scoring for this sentence
-                score = score_sentence_with_nli(sent, chemical, disease)
-                method = 'nli'
-            else:
-                try:
-                    score = score_sentence_with_re_model(marked)
-                    method = 're_model'
-                except Exception as e:
-                    print('RE model scoring error:', e)
-                    score = score_sentence_with_nli(sent, chemical, disease)
-                    method = 'nli'
-        else:
-            score = score_sentence_with_nli(sent, chemical, disease)
-            method = 'nli'
-        if score > best_score:
-            best_score = score
-            best_sent = sent
-            used_method = method
-    return {'pmid': pmid, 'chemical': chemical, 'disease': disease, 'best_sentence': best_sent, 'confidence': float(best_score), 'method': used_method, 'note': 'ok'}
+    # fallback: if no sentences mention either, include all sentences
+    if not candidates:
+        candidates = sentences
 
-def run_pipeline(input_csv=INPUT_CSV, output_csv=OUTPUT_CSV, max_rows=None):
+    return candidates
+
+
+# ---------- NLI Scorer ----------
+class NLIScorer:
+    def __init__(self, model_name: str, device: int = DEVICE):
+        logging.info(f"Loading NLI model: {model_name}")
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
+        if device != -1 and torch.cuda.is_available():
+            self.model.to(torch.device("cuda"))
+        id2label = {int(k): v.lower() for k, v in getattr(self.model.config, "id2label", {}).items()}
+        self.entail_label_idx = next((idx for idx, lab in id2label.items() if "entail" in lab), 2)
+        logging.info(f"Entailment label index set to {self.entail_label_idx}")
+
+    def score(self, premise: str, hypothesis: str) -> float:
+        inputs = self.tokenizer(premise, hypothesis, return_tensors="pt", truncation=True, max_length=4096)
+        if next(self.model.parameters()).is_cuda:
+            inputs = {k: v.to(next(self.model.parameters()).device) for k, v in inputs.items()}
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+            probs = torch.softmax(outputs.logits, dim=1).cpu().numpy()[0]
+        if self.entail_label_idx < len(probs):
+            return float(probs[self.entail_label_idx])
+        return float(probs.max())
+
+# ---------- PMIDs helper ----------
+def re_split_pmids(pmid_field: str) -> List[str]:
+    if pd.isna(pmid_field):
+        return []
+    s = str(pmid_field)
+    parts = []
+    for sep in [";", ",", "|"]:
+        if sep in s:
+            parts = [p.strip() for p in s.split(sep) if p.strip()]
+            break
+    if not parts:
+        parts = s.split()
+    normalized = []
+    for p in parts:
+        token = "".join(ch for ch in p.strip() if ch.isdigit())
+        if token:
+            normalized.append(token)
+    return normalized
+
+# ---------- Main pipeline ----------
+def process_row_nli(scorer: NLIScorer, chemical: str, disease: str, pmid_field: str):
+    """
+    Process a single row: select best_sentence and compute global abstract confidence.
+    Returns dict with:
+        - pmid
+        - chemical
+        - disease
+        - best_sentence
+        - best_sentence_confidence
+        - global_confidence
+        - note
+    """
+    pmids = [p.strip() for p in re_split_pmids(pmid_field) if p.strip()]
+    if not pmids:
+        return {
+            "pmid": None,
+            "chemical": chemical,
+            "disease": disease,
+            "best_sentence": None,
+            "best_sentence_confidence": 0.0,
+            "global_confidence": 0.0,
+            "note": "no_pmid",
+        }
+
+    results = []
+
+    for pmid in pmids:
+        abstract_text = fetch_abstract(pmid)
+        if not abstract_text:
+            continue
+
+        # Candidate sentences
+        candidates = find_candidate_sentences(abstract_text, chemical, disease)
+        if not candidates:
+            # fallback: split abstract into sentences if none matched
+            candidates = nltk.sent_tokenize(abstract_text)
+
+        # Prepare hypotheses
+        hypotheses = [tmpl.format(chemical=chemical, disease=disease) for tmpl in HYPOTHESIS_TEMPLATES]
+
+        # --- Best sentence scoring ---
+        best_sentence = None
+        best_sentence_conf = -1.0
+        for sent in candidates:
+            sent_score = max([scorer.score(sent, hyp) for hyp in hypotheses])
+            if sent_score > best_sentence_conf:
+                best_sentence_conf = sent_score
+                best_sentence = sent
+
+        # --- Global confidence for full abstract ---
+        global_conf = max([scorer.score(abstract_text, hyp) for hyp in hypotheses])
+
+        results.append({
+            "pmid": pmid,
+            "chemical": chemical,
+            "disease": disease,
+            "best_sentence": best_sentence,
+            "best_sentence_confidence": float(best_sentence_conf),
+            "global_confidence": float(global_conf),
+            "note": "ok",
+        })
+
+    # Return the row with highest global confidence
+    if results:
+        best_result = max(results, key=lambda x: x["global_confidence"])
+        return best_result
+    else:
+        return {
+            "pmid": None,
+            "chemical": chemical,
+            "disease": disease,
+            "best_sentence": None,
+            "best_sentence_confidence": 0.0,
+            "global_confidence": 0.0,
+            "note": "no_evidence",
+        }
+
+
+
+def run_pipeline(input_csv: str = INPUT_CSV, output_csv: str = OUTPUT_CSV, max_rows: Optional[int] = None):
     df = pd.read_csv(input_csv, dtype=str)
-    required = {'chemical', 'disease', 'pmid'}
+    # standardize column names
     cols_lower = {c.lower(): c for c in df.columns}
+    required = {"chemical", "disease", "pmid"}
     if not required.issubset(set(cols_lower.keys())):
         raise ValueError(f"Input CSV must contain columns: {required}")
-    # rename
     df = df.rename(columns={cols_lower[c]: c for c in cols_lower})
     df = df.rename(columns={c: c.lower() for c in df.columns})
-    results = []
-    rows = df.to_dict('records')
     if max_rows:
-        rows = rows[:max_rows]
-    for row in tqdm(rows, desc='Processing rows'):
-        chem = row.get('chemical')
-        dis = row.get('disease')
-        pmid = row.get('pmid')
+        df = df.iloc[:max_rows].copy()
+
+    scorer = NLIScorer(NLI_MODEL)
+    results = []
+
+    for _, row in tqdm(df.iterrows(), total=len(df), desc="Processing rows"):
+        chem = row["chemical"]
+        dis = row["disease"]
+        pmid_field = row["pmid"]
         try:
-            res = process_row(chem, dis, pmid)
+            res = process_row_nli(scorer, chem, dis, pmid_field)
         except Exception as e:
-            print('Error processing', pmid, e)
-            res = {'pmid': pmid, 'chemical': chem, 'disease': dis, 'best_sentence': None, 'confidence': 0.0, 'note': f'error: {e}'}
+            logging.exception("Error processing row with pmid(s) %s: %s", pmid_field, e)
+            res = {
+                "pmid": None,
+                "chemical": chem,
+                "disease": dis,
+                "best_sentence": None,
+                "best_sentence_confidence": 0.0,
+                "global_confidence": 0.0,
+                "note": f"error: {e}",
+            }
         results.append(res)
+
     out_df = pd.DataFrame(results)
     out_df.to_csv(output_csv, index=False)
+    logging.info("Wrote results to %s", output_csv)
     return out_df
 
-run_pipeline()
 
+
+# ---------- Entrypoint ----------
+if __name__ == "__main__":
+    run_pipeline()
