@@ -17,7 +17,6 @@ import time
 from pathlib import Path
 import logging
 import pandas as pd
-from tqdm.auto import tqdm
 import nltk
 nltk.download("punkt", quiet=True)
 from Bio import Entrez
@@ -242,7 +241,8 @@ def run_pipeline(input_csv: str = INPUT_CSV, output_csv: str = OUTPUT_CSV, max_r
     scorer = NLIScorer(NLI_MODEL)
     results = []
 
-    for _, row in tqdm(df.iterrows(), total=len(df), desc="Processing rows"):
+    for i, (_, row) in enumerate(df.iterrows(), 1):
+        print(f"Processing row {i}/{len(df)}")
         chem = row["chemical"]
         dis = row["disease"]
         pmid_field = row["pmid"]
