@@ -3,7 +3,7 @@
 SELECT DISTINCT ?itemLabel ?meshID ?treeCode ?icd10 WHERE {
   # MeSH tree code
   ?item wdt:P672 ?treeCode .
-  FILTER(STRSTARTS(?treeCode, "F03.625"))
+  FILTER(STRSTARTS(?treeCode, "F03.625.164"))
 
   # MeSH descriptor ID
   ?item wdt:P486 ?meshID .
