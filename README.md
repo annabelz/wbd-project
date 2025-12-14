@@ -38,7 +38,7 @@ Output of 2-NLP/2.1-ctd-relation-nli.py
 Output of 1-Parse-Query/queryer.py
 
 ### wbd.owl
-Unpopulated XML file
+Unpopulated XML file containing knowledge graph
 
 ### wbd_populated.owl
 Fully populated XML file; generated through 1-Parse-Query/parser.py
