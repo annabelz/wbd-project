@@ -1,6 +1,4 @@
-*SPARQL QUERIES*
-
-1. Extracting MeSH ID’s for all Neurodevelopmental disorders:
+# *SPARQL QUERY USED TO CREATE DiseaseMeSH.csv*
 
 SELECT DISTINCT ?itemLabel ?meshID ?treeCode ?icd10 WHERE {
   # MeSH tree code
