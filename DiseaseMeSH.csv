@@ -1,5 +1,5 @@
 itemLabel,meshID,treeCode,icd10
 pervasive developmental disorder,D002659,F03.625.164,F84
-autism spectrum disorder,D000067877,F03.625.164.113,
+autism spectrum disorder,D000067877,F03.625.164.113, F84.0
 Asperger syndrome,D020817,F03.625.164.113.250,F84.5
 autism,D001321,F03.625.164.113.500,F84.0

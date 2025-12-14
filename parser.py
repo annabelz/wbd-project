@@ -26,8 +26,7 @@ with onto:
 
     class Gene(Thing):
         pass
-    class Name(Thing):
-        pass
+    
     class EDRelationship(Thing):
         pass
     class ScientificArticle(Thing):
@@ -47,11 +46,6 @@ with onto:
     class has_icd10(ObjectProperty):
         domain = [Disease]
         range = [Icd10]
-        pass
-
-    class has_name(ObjectProperty):
-        domain = [Chemical, Disease]
-        range = [Name]
         pass
         
     class has_exposure(ObjectProperty):
@@ -74,9 +68,6 @@ with onto:
         range = [Gene]
         pass
 
-    # TODO: add is_child_of and is_parent_of if relevant
-    # TODO: remove Name class mentions
-
 # DiseaseMeSH parsing
 
 disease_mesh = pd.read_csv("DiseaseMeSH.csv", header=0)
@@ -90,19 +81,16 @@ for i in range(len(disease_mesh)):
 
     # create objects per row
     disease_ID_obj = onto.Disease(disease_ID)
-    # disease_name_obj = onto.Name(disease_name)
     disease_tree_obj = onto.TreeCode(disease_tree)
     disease_icd_obj = onto.Icd10(disease_icd)
     
-    # ADD LABELS HERE
+    # add labels
     disease_ID_obj.label = [str(disease_mesh["itemLabel"][i])]  # human-readable
-    # disease_name_obj.label = [str(disease_mesh["itemLabel"][i])]
     disease_tree_obj.label = [disease_tree]
     disease_icd_obj.label = [disease_icd]
 
     # create relationships
     disease_ID_obj.has_treecode.append(disease_tree_obj)
-    # disease_ID_obj.has_name.append(disease_name_obj)
     disease_ID_obj.has_icd10.append(disease_icd_obj)
 
 # disease_chems parsing
@@ -120,9 +108,7 @@ for i in range(num_entries):
     edr_name = str(f"{chem_id}_{disease_id}")
     gene = str(disease_chems[10][i])
 
-    #chem_name_obj = onto.Name(chem_name)
     chem_id_obj = onto.Chemical(chem_id)
-    #disease_name_obj = onto.Name(disease_name)
     disease_id_obj = onto.Disease(disease_id)
     edr_name_obj = onto.EDRelationship(edr_name)
     gene_obj = onto.Gene(gene)
@@ -135,9 +121,7 @@ for i in range(num_entries):
             edr_name_obj.is_evidenced_by.append(SA1_obj)
 
     # ADD LABELS HERE
-    #chem_name_obj.label = [disease_chems[1][i]]  
     chem_id_obj.label = [disease_chems[1][i]]
-    #disease_name_obj.label = [disease_chems[4][i]]
     disease_id_obj.label = [disease_chems[4][i]]
     edr_name_obj.label = [edr_name]
     gene_obj.label = [gene]
@@ -145,8 +129,6 @@ for i in range(num_entries):
     edr_name_obj.has_exposure.append(chem_id_obj)
     edr_name_obj.has_disease.append(disease_id_obj)
     edr_name_obj.is_associated_with.append(gene_obj)
-    #chem_id_obj.has_name.append(chem_name_obj)
-    #disease_id_obj.has_name.append(disease_name_obj)
     
 # # Save back to OWL
 onto.save("wbd_populated.owl")
