@@ -2,7 +2,9 @@
 
 ## Input files
 
-### ... chem diseases, meshchem
+### DiseaseMeSH.csv
+### CTD_disease_chems.csv
+### CTD_disease_chems_curated.csv
 
 ## Owl files
 
