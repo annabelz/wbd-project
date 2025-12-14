@@ -1,8 +1,8 @@
 """
-ctd_relation_nli.py
+2.1-ctd-relation-nli.py
 
-Input:  input_ctd.csv  (columns: chemical,disease,pmid)
-Output: ctd_relation_results.csv
+Input:  Data/input_ctd.csv  (columns: chemical,disease,pmid)
+Output: Results/ctd_relation_results.csv
 
 Uses an NLI model (tasksource/deberta-small-long-nli) to score whether
 a sentence/abstract entails the hypothesis "Exposure to {chemical} causes {disease}."
